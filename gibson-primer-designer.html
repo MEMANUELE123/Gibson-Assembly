@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gibson Primer Designer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F3F6F5;
+    --surface:#FFFFFF;
+    --ink:#152238;
+    --ink-soft:#51617D;
+    --ink-faint:#8C9BB5;
+    --line:#DCE4E1;
+    --line-soft:#EAEFED;
+    --teal:#0E7C7B;
+    --teal-dark:#0A5F5E;
+    --teal-wash:#E6F2F1;
+    --coral:#D9541F;
+    --coral-wash:#FBEBE2;
+    --indigo:#3A5A9C;
+    --indigo-wash:#E9EDF6;
+    --amber:#B4790A;
+    --amber-wash:#FBF1DD;
+    --danger:#B3261E;
+    --danger-wash:#FBEAE8;
+    --mono:'IBM Plex Mono', ui-monospace, Menlo, Consolas, monospace;
+    --sans:'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.5;
+    padding:0 0 80px 0;
+  }
+  .wrap{max-width:960px;margin:0 auto;padding:0 20px;}
+
+  /* ---- header ---- */
+  header.top{
+    background:linear-gradient(180deg,#101B30 0%, #16233D 100%);
+    color:#EDF2F7;
+    padding:40px 0 34px 0;
+    border-bottom:3px solid var(--teal);
+  }
+  header.top .eyebrow{
+    font-family:var(--mono);
+    font-size:12.5px;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    color:#7FD9C9;
+    margin:0 0 10px 0;
+  }
+  header.top h1{
+    font-size:30px;
+    margin:0 0 8px 0;
+    font-weight:700;
+    letter-spacing:-0.01em;
+  }
+  header.top p{
+    margin:0;
+    color:#B7C4DA;
+    max-width:640px;
+    font-size:15px;
+  }
+
+  /* ---- cards ---- */
+  .card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:var(--radius);
+    padding:24px;
+    margin-top:22px;
+  }
+  .card h2{
+    font-size:16px;
+    margin:0 0 4px 0;
+    display:flex;
+    align-items:center;
+    gap:9px;
+  }
+  .card h2 .num{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:22px;height:22px;
+    border-radius:50%;
+    background:var(--teal-wash);
+    color:var(--teal-dark);
+    font-family:var(--mono);
+    font-size:12px;
+    font-weight:600;
+  }
+  .card .sub{
+    color:var(--ink-soft);
+    font-size:13.5px;
+    margin:0 0 18px 0;
+  }
+  .card.vector-card h2 .num{background:var(--indigo-wash);color:var(--indigo);}
+  .card.insert-card h2 .num{background:var(--coral-wash);color:var(--coral);}
+
+  label{
+    display:block;
+    font-size:12.5px;
+    font-weight:600;
+    color:var(--ink-soft);
+    margin-bottom:5px;
+    text-transform:uppercase;
+    letter-spacing:.03em;
+  }
+  .field{margin-bottom:14px;}
+  .row{display:flex;gap:14px;flex-wrap:wrap;}
+  .row > .field{flex:1;min-width:140px;}
+
+  input[type=text], input[type=number], textarea{
+    width:100%;
+    font-family:var(--sans);
+    font-size:14px;
+    padding:9px 11px;
+    border:1px solid var(--line);
+    border-radius:7px;
+    background:#FCFDFD;
+    color:var(--ink);
+  }
+  textarea{
+    font-family:var(--mono);
+    font-size:12.5px;
+    min-height:96px;
+    resize:vertical;
+    line-height:1.45;
+  }
+  input:focus, textarea:focus{
+    outline:2px solid var(--teal);
+    outline-offset:1px;
+    border-color:var(--teal);
+  }
+  .hint{font-size:12px;color:var(--ink-faint);margin-top:5px;}
+
+  .file-row{display:flex;align-items:center;gap:10px;margin-top:8px;}
+  .file-btn{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:12.5px;font-weight:600;
+    padding:7px 12px;border-radius:7px;
+    background:var(--line-soft);color:var(--ink-soft);
+    border:1px solid var(--line);cursor:pointer;
+  }
+  .file-btn:hover{background:var(--line);}
+  .file-name{font-size:12px;color:var(--ink-faint);font-family:var(--mono);}
+
+  .toggle-row{
+    display:flex;align-items:flex-start;gap:10px;
+    padding:12px 14px;background:var(--line-soft);border-radius:8px;margin-top:4px;
+  }
+  .toggle-row input{margin-top:3px;width:16px;height:16px;flex-shrink:0;}
+  .toggle-row .txt strong{display:block;font-size:13.5px;color:var(--ink);}
+  .toggle-row .txt span{font-size:12.5px;color:var(--ink-soft);}
+
+  details.advanced{margin-top:16px;}
+  details.advanced summary{
+    cursor:pointer;font-size:12.5px;font-weight:600;color:var(--teal-dark);
+    text-transform:uppercase;letter-spacing:.03em;
+  }
+  details.advanced .row{margin-top:14px;}
+
+  .design-btn-wrap{
+    display:flex;justify-content:center;margin-top:28px;
+  }
+  button.primary{
+    background:var(--teal);
+    color:#fff;
+    border:none;
+    font-family:var(--sans);
+    font-weight:700;
+    font-size:15px;
+    padding:14px 34px;
+    border-radius:8px;
+    cursor:pointer;
+    box-shadow:0 2px 0 var(--teal-dark);
+  }
+  button.primary:hover{background:var(--teal-dark);}
+  button.primary:active{transform:translateY(1px);box-shadow:none;}
+  button.ghost{
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--ink-soft);
+    font-family:var(--sans);
+    font-size:12.5px;
+    font-weight:600;
+    padding:7px 13px;
+    border-radius:7px;
+    cursor:pointer;
+  }
+  button.ghost:hover{border-color:var(--teal);color:var(--teal-dark);}
+
+  /* ---- results ---- */
+  #results{display:none;margin-top:34px;}
+  #results h2.section-title{
+    font-size:13px;text-transform:uppercase;letter-spacing:.08em;
+    color:var(--ink-soft);margin:0 0 14px 0;
+    border-bottom:1px solid var(--line);padding-bottom:10px;
+  }
+
+  .primer-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-left:5px solid var(--teal);
+    border-radius:9px;
+    padding:18px 20px;
+    margin-bottom:14px;
+  }
+  .primer-card.role-vector{border-left-color:var(--indigo);}
+  .primer-card .p-head{
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;
+    margin-bottom:10px;
+  }
+  .primer-card .p-name{font-weight:700;font-size:14.5px;}
+  .primer-card .p-meta{font-size:12.5px;color:var(--ink-soft);font-family:var(--mono);}
+  .seq-box{
+    font-family:var(--mono);
+    font-size:14.5px;
+    letter-spacing:.01em;
+    background:#FBFCFC;
+    border:1px solid var(--line-soft);
+    border-radius:7px;
+    padding:12px 13px;
+    word-break:break-all;
+    line-height:1.6;
+  }
+  .seq-box .tail{background:var(--amber-wash);color:#7A560E;border-radius:3px;padding:1px 0;}
+  .seq-box .anneal{color:var(--ink);}
+  .legend{display:flex;gap:16px;margin-top:9px;flex-wrap:wrap;}
+  .legend span{font-size:11.5px;color:var(--ink-soft);display:flex;align-items:center;gap:5px;}
+  .legend i{width:10px;height:10px;border-radius:2px;display:inline-block;}
+  .legend i.tail{background:var(--amber-wash);border:1px solid #E4C579;}
+  .legend i.anneal{background:#fff;border:1px solid var(--ink-faint);}
+
+  .stat-row{display:flex;gap:18px;flex-wrap:wrap;margin-top:11px;}
+  .stat{font-size:12.5px;}
+  .stat b{display:block;font-family:var(--mono);font-size:14px;color:var(--ink);}
+  .stat span{color:var(--ink-faint);text-transform:uppercase;font-size:10.5px;letter-spacing:.04em;}
+
+  .warn-list{margin-top:11px;}
+  .warn-item{
+    font-size:12.5px;
+    padding:7px 10px;
+    border-radius:6px;
+    margin-top:6px;
+    display:flex;gap:7px;
+  }
+  .warn-item.caution{background:var(--amber-wash);color:#7A560E;}
+  .warn-item.fail{background:var(--danger-wash);color:var(--danger);}
+  .warn-item.ok{background:var(--teal-wash);color:var(--teal-dark);}
+
+  .copy-btn{
+    margin-top:10px;
+    background:var(--ink);
+    color:#fff;
+    border:none;
+    font-size:12px;
+    font-weight:600;
+    padding:7px 12px;
+    border-radius:6px;
+    cursor:pointer;
+  }
+  .copy-btn:hover{background:var(--teal-dark);}
+  .copy-btn.copied{background:var(--teal);}
+
+  .junction-card{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-left:5px solid #7A560E;
+    border-radius:9px;
+    padding:16px 20px;
+    margin-bottom:14px;
+  }
+  .junction-card .j-head{
+    display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:8px;
+    margin-bottom:9px;
+  }
+  .junction-card .j-name{font-weight:700;font-size:14px;}
+  .junction-card .j-meta{font-size:12px;color:var(--ink-soft);font-family:var(--mono);}
+  .junction-card .end-labels{
+    display:flex;justify-content:space-between;
+    font-size:10.5px;color:var(--ink-faint);
+    text-transform:uppercase;letter-spacing:.04em;
+    margin-top:6px;
+  }
+
+  .diagram-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:20px;}
+  .diagram-wrap svg{width:100%;height:auto;display:block;}
+
+  .global-warns{margin-bottom:18px;}
+
+  .toolbar-row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;}
+
+  footer.credit{
+    max-width:960px;margin:50px auto 0 auto;padding:0 20px;
+    font-size:12px;color:var(--ink-faint);text-align:center;
+  }
+
+  .example-link{
+    background:none;border:none;color:var(--teal-dark);font-size:12.5px;
+    font-weight:600;cursor:pointer;text-decoration:underline;padding:0;
+  }
+
+  @media (max-width:640px){
+    header.top h1{font-size:24px;}
+    .card{padding:18px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <p class="eyebrow">Molecular biology &middot; primer design</p>
+    <h1>Gibson Assembly Primer Designer</h1>
+    <p>Design chimeric primers for a two-fragment Gibson Assembly (vector + insert). Calculates nearest-neighbor Tm for annealing regions and homology overlaps, flags length/GC/dimer issues, and gives you ready-to-order sequences.</p>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <!-- VECTOR -->
+  <div class="card vector-card">
+    <h2><span class="num">1</span> Vector (backbone)</h2>
+    <p class="sub">Paste the vector as a single linear sequence, 5'&rarr;3', in the exact orientation it will have in the final plasmid &mdash; starting immediately <em>after</em> the insertion site and ending immediately <em>before</em> it. (This is what you'd have after restriction digestion + gel purification, or a linearizing PCR.)</p>
+
+    <div class="field">
+      <label for="vectorName">Fragment name</label>
+      <input type="text" id="vectorName" value="Vector">
+    </div>
+
+    <div class="field">
+      <label for="vectorSeq">Sequence (paste raw, FASTA, or GenBank)</label>
+      <textarea id="vectorSeq" placeholder="Paste sequence here, or upload a file below&hellip;"></textarea>
+      <div class="file-row">
+        <label class="file-btn" for="vectorFile">Upload .fasta / .fa / .gb / .gbk / .txt
+          <input type="file" id="vectorFile" accept=".fasta,.fa,.fna,.gb,.gbk,.txt" style="display:none">
+        </label>
+        <span class="file-name" id="vectorFileName"></span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label for="vectorStart">Sub-region start (optional)</label>
+        <input type="number" id="vectorStart" min="1" placeholder="e.g. 1">
+      </div>
+      <div class="field">
+        <label for="vectorEnd">Sub-region end (optional)</label>
+        <input type="number" id="vectorEnd" min="1" placeholder="e.g. 4500">
+      </div>
+    </div>
+    <p class="hint">Leave blank to use the whole pasted/uploaded sequence. Use this if you uploaded a full plasmid and only want a slice of it.</p>
+
+    <div class="toggle-row">
+      <input type="checkbox" id="vectorNeedsPCR">
+      <div class="txt">
+        <strong>Also design primers to PCR-linearize this vector</strong>
+        <span>Leave unchecked if the vector above is already your final linear backbone (e.g. from a digest). Check this if you need plain (tail-free) primers to amplify it out of a larger template &mdash; put the full region to amplify above.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSERT -->
+  <div class="card insert-card">
+    <h2><span class="num">2</span> Insert</h2>
+    <p class="sub">Paste the exact region you want cloned in (the amplicon), 5'&rarr;3', in the orientation you want it to appear in the final plasmid.</p>
+
+    <div class="field">
+      <label for="insertName">Fragment name</label>
+      <input type="text" id="insertName" value="Insert">
+    </div>
+
+    <div class="field">
+      <label for="insertSeq">Sequence (paste raw, FASTA, or GenBank)</label>
+      <textarea id="insertSeq" placeholder="Paste sequence here, or upload a file below&hellip;"></textarea>
+      <div class="file-row">
+        <label class="file-btn" for="insertFile">Upload .fasta / .fa / .gb / .gbk / .txt
+          <input type="file" id="insertFile" accept=".fasta,.fa,.fna,.gb,.gbk,.txt" style="display:none">
+        </label>
+        <span class="file-name" id="insertFileName"></span>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="field">
+        <label for="insertStart">Sub-region start (optional)</label>
+        <input type="number" id="insertStart" min="1" placeholder="e.g. 1">
+      </div>
+      <div class="field">
+        <label for="insertEnd">Sub-region end (optional)</label>
+        <input type="number" id="insertEnd" min="1" placeholder="e.g. 1020">
+      </div>
+    </div>
+    <p class="hint"><button class="example-link" id="loadExample" type="button">Load an example vector + insert to see how this works &rarr;</button></p>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="card">
+    <h2><span class="num">3</span> Assembly settings</h2>
+    <p class="sub">Defaults follow common NEBuilder-style guidance. Adjust if your protocol differs.</p>
+
+    <div class="row">
+      <div class="field">
+        <label for="overlapLen">Homology overlap length (bp)</label>
+        <input type="number" id="overlapLen" value="22" min="15" max="60">
+      </div>
+      <div class="field">
+        <label for="targetTm">Target annealing Tm (&deg;C)</label>
+        <input type="number" id="targetTm" value="60" min="50" max="75">
+      </div>
+      <div class="field">
+        <label for="minLen">Min annealing length (nt)</label>
+        <input type="number" id="minLen" value="18" min="12" max="40">
+      </div>
+      <div class="field">
+        <label for="maxLen">Max annealing length (nt)</label>
+        <input type="number" id="maxLen" value="35" min="18" max="60">
+      </div>
+      <div class="field">
+        <label for="junctionContext">Junction context to show (nt/side)</label>
+        <input type="number" id="junctionContext" value="15" min="5" max="50">
+      </div>
+    </div>
+
+    <details class="advanced">
+      <summary>Advanced Tm parameters</summary>
+      <div class="row">
+        <div class="field">
+          <label for="primerConc">Primer concentration (nM)</label>
+          <input type="number" id="primerConc" value="500" min="10" max="5000">
+        </div>
+        <div class="field">
+          <label for="naConc">Na&#8314; concentration (mM)</label>
+          <input type="number" id="naConc" value="50" min="1" max="1000">
+        </div>
+      </div>
+    </details>
+
+    <div class="design-btn-wrap">
+      <button class="primary" id="designBtn">Design primers</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results">
+    <h2 class="section-title">Junction map</h2>
+    <div class="diagram-wrap"><div id="diagram"></div></div>
+
+    <div class="global-warns" id="globalWarns"></div>
+
+    <h2 class="section-title">Junction sequences <span style="text-transform:none;font-weight:400;">&mdash; what the final assembled plasmid looks like at each seam</span></h2>
+    <div id="junctionCards"></div>
+
+    <h2 class="section-title">Primers</h2>
+    <div id="primerCards"></div>
+
+    <div class="toolbar-row">
+      <button class="ghost" id="copyAllBtn">Copy all primers (name + sequence)</button>
+    </div>
+  </div>
+
+</div>
+
+<footer class="credit">Built for primer design in the Emanuele Lab &middot; UNC Lineberger Comprehensive Cancer Center<br>Tm values use SantaLucia (1998) unified nearest-neighbor parameters &mdash; treat as a comparative guide alongside your polymerase manufacturer's calculator.</footer>
+
+<script>
+(function(){
+
+  /* ============ sequence parsing ============ */
+  function parseSequenceInput(text){
+    if(!text) return {seq:'', warnings:[]};
+    text = text.trim();
+    let warnings = [];
+    let body = text;
+
+    if(text.startsWith('>')){
+      // FASTA: drop header lines
+      body = text.split('\n').filter(l => !l.startsWith('>')).join('\n');
+    } else if(/LOCUS|ORIGIN/i.test(text)){
+      // GenBank
+      const originIdx = text.search(/ORIGIN/i);
+      if(originIdx >= 0){
+        let after = text.slice(originIdx);
+        const endIdx = after.search(/\/\//);
+        if(endIdx >= 0) after = after.slice(0, endIdx);
+        body = after;
+      }
+    }
+
+    // strip everything that isn't a letter
+    let letters = body.replace(/[^A-Za-z]/g, '').toUpperCase();
+    let cleaned = '';
+    let hadAmbiguous = false;
+    for(const ch of letters){
+      if('ACGT'.includes(ch)){
+        cleaned += ch;
+      } else {
+        hadAmbiguous = true;
+        cleaned += 'N';
+      }
+    }
+    if(hadAmbiguous) warnings.push('Non-ACGT characters found (ambiguity codes or stray letters) and replaced with N. Check your source sequence.');
+    return {seq: cleaned, warnings};
+  }
+
+  function sliceRegion(seq, startEl, endEl){
+    const s = startEl.value ? parseInt(startEl.value,10) : null;
+    const e = endEl.value ? parseInt(endEl.value,10) : null;
+    if(!s && !e) return seq;
+    const start = s ? Math.max(1,s) : 1;
+    const end = e ? Math.min(seq.length,e) : seq.length;
+    if(start > end) return seq;
+    return seq.slice(start-1, end);
+  }
+
+  /* ============ file upload ============ */
+  function wireFileInput(fileInputId, targetTextareaId, fileNameId){
+    document.getElementById(fileInputId).addEventListener('change', function(evt){
+      const file = evt.target.files[0];
+      if(!file) return;
+      document.getElementById(fileNameId).textContent = file.name;
+      const reader = new FileReader();
+      reader.onload = function(e){
+        document.getElementById(targetTextareaId).value = e.target.result;
+      };
+      reader.readAsText(file);
+    });
+  }
+  wireFileInput('vectorFile','vectorSeq','vectorFileName');
+  wireFileInput('insertFile','insertSeq','insertFileName');
+
+  /* ============ core biology helpers ============ */
+  const COMP = {A:'T',T:'A',G:'C',C:'G',N:'N'};
+  function revcomp(seq){
+    let out = '';
+    for(let i=seq.length-1;i>=0;i--) out += COMP[seq[i]] || 'N';
+    return out;
+  }
+  function gcContent(seq){
+    if(!seq.length) return 0;
+    let gc = 0;
+    for(const c of seq) if(c==='G'||c==='C') gc++;
+    return (gc/seq.length)*100;
+  }
+
+  // SantaLucia 1998 unified NN parameters: dH kcal/mol, dS cal/(mol*K)
+  const NN = {
+    AA:[-7.9,-22.2], TT:[-7.9,-22.2],
+    AT:[-7.2,-20.4],
+    TA:[-7.2,-21.3],
+    CA:[-8.5,-22.7], TG:[-8.5,-22.7],
+    GT:[-8.4,-22.4], AC:[-8.4,-22.4],
+    CT:[-7.8,-21.0], AG:[-7.8,-21.0],
+    GA:[-8.2,-22.2], TC:[-8.2,-22.2],
+    CG:[-10.6,-27.2],
+    GC:[-9.8,-24.4],
+    GG:[-8.0,-19.9], CC:[-8.0,-19.9]
+  };
+  const INIT_GC = [0.1,-2.8];
+  const INIT_AT = [2.3, 4.1];
+  const R = 1.987; // cal/(mol*K)
+
+  function calcTm(seq, primerConcNM, naConcMM){
+    seq = seq.replace(/N/g,'A'); // rough fallback so calc doesn't break on N
+    if(seq.length < 2) return null;
+    let dH = 0, dS = 0;
+    for(let i=0;i<seq.length-1;i++){
+      const step = seq.slice(i,i+2);
+      const p = NN[step];
+      if(p){ dH += p[0]; dS += p[1]; }
+    }
+    const five = seq[0], three = seq[seq.length-1];
+    [five, three].forEach(b=>{
+      if(b==='G'||b==='C'){ dH += INIT_GC[0]; dS += INIT_GC[1]; }
+      else { dH += INIT_AT[0]; dS += INIT_AT[1]; }
+    });
+    const primerConcM = (primerConcNM||500) * 1e-9;
+    const CT = primerConcM / 4; // non-self-complementary, primer in excess-ish default
+    const tmK = (dH*1000) / (dS + R*Math.log(CT));
+    const naM = (naConcMM||50) / 1000;
+    const tmC = (tmK - 273.15) + 16.6*Math.log10(naM);
+    return tmC;
+  }
+
+  /* simple heuristic hairpin check: looks for an inverted repeat (stem>=4)
+     with a loop of >=3 within the sequence */
+  function hasHairpinRisk(seq){
+    const n = seq.length;
+    const minStem = 4;
+    for(let i=0;i<n-minStem*2-3;i++){
+      for(let j=i+minStem+3;j<n-minStem+1;j++){
+        let stem = 0;
+        while(stem < minStem+4 && (i+stem) < j && COMP[seq[i+stem]] === seq[j+ (0) + (minStem-1-stem)]) {
+          // simplistic; break out, use below more direct check instead
+          break;
+        }
+      }
+    }
+    // Direct, simpler approach: slide a window of length w from the start,
+    // see if its reverse complement occurs later with a gap >=3.
+    for(let w=8; w>=4; w--){
+      for(let i=0; i<=n-w; i++){
+        const frag = seq.slice(i,i+w);
+        const rc = revcomp(frag);
+        const searchFrom = i + w + 3; // loop >=3
+        if(searchFrom < n){
+          if(seq.indexOf(rc, searchFrom) !== -1) return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  function has3primeDimerRisk(seqA, seqB){
+    // check if 3' end (last 5nt) of A is complementary to any 5+ stretch in B
+    const tailLen = 5;
+    if(seqA.length < tailLen || seqB.length < tailLen) return false;
+    const tail = seqA.slice(-tailLen);
+    const tailRC = revcomp(tail);
+    return seqB.indexOf(tailRC) !== -1;
+  }
+
+  /* ============ primer construction ============ */
+  // direction: 'fwd' anneal to top strand starting at position 0 of templateFragment
+  //            'rev' anneal to bottom strand, i.e. primer = revcomp of the END of templateFragment
+  function buildAnnealingRegion(templateFragment, direction, opts){
+    const {minLen, maxLen, targetTm, primerConc, naConc} = opts;
+    let bestLen = Math.min(minLen, templateFragment.length);
+    let chosenSeq = '';
+    let chosenTm = null;
+    let hitTarget = false;
+
+    const upper = Math.min(maxLen, templateFragment.length);
+    for(let len = Math.min(minLen, upper); len <= upper; len++){
+      let raw;
+      if(direction === 'fwd'){
+        raw = templateFragment.slice(0, len);
+      } else {
+        raw = revcomp(templateFragment.slice(templateFragment.length-len));
+      }
+      const tm = calcTm(raw, primerConc, naConc);
+      chosenSeq = raw; chosenTm = tm; bestLen = len;
+      if(tm !== null && tm >= targetTm){ hitTarget = true; break; }
+    }
+    return {seq: chosenSeq, tm: chosenTm, len: bestLen, hitTarget};
+  }
+
+  function analyzePrimer(fullSeq, annealSeq, tailSeq){
+    const warnings = [];
+    const gc = gcContent(annealSeq);
+    if(gc < 40 || gc > 60) warnings.push({level:'caution', text:`Annealing region GC content is ${gc.toFixed(0)}% (ideal ~40\u201360%).`});
+    const lastBase = annealSeq[annealSeq.length-1];
+    if(!(lastBase==='G'||lastBase==='C')) warnings.push({level:'caution', text:'3\u2032 end of annealing region is not G/C (no GC clamp) \u2014 usually fine, but a G/C last base can improve priming.'});
+    if(hasHairpinRisk(fullSeq)) warnings.push({level:'caution', text:'Possible hairpin / self-complementary region detected \u2014 verify with an oligo analysis tool before ordering.'});
+    if(annealSeq.length > 0 && fullSeq.indexOf(revcomp(annealSeq.slice(-5))) !== fullSeq.lastIndexOf(revcomp(annealSeq.slice(-5)))){
+      // redundant safety net; main dimer checks happen pairwise below
+    }
+    return warnings;
+  }
+
+  /* ============ diagram ============ */
+  function buildDiagramSVG(vectorName, insertName, overlapLen, vectorHasPCR){
+    const W = 860, H = vectorHasPCR ? 230 : 190;
+    const barY = 90, barH = 22;
+    const vecColor = 'var(--indigo)', insColor = 'var(--coral)';
+    const insertX = 260, insertW = 300;
+    const vecLeftW = insertX;                 // vector tail segment before insert (representing 3' end)
+    const vecRightX = insertX+insertW;
+    const vecRightW = W - vecRightX;
+
+    return `
+    <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Mono, monospace">
+      <style>
+        .lbl{font-size:11px;fill:#51617D;}
+        .lbl-b{font-size:11.5px;fill:#152238;font-weight:600;}
+        .ov{font-size:10.5px;fill:#7A560E;}
+      </style>
+
+      <!-- vector left segment (3' end of vector, wraps to end of insert) -->
+      <rect x="0" y="${barY}" width="${vecLeftW}" height="${barH}" fill="#3A5A9C" rx="4"/>
+      <!-- insert -->
+      <rect x="${insertX}" y="${barY}" width="${insertW}" height="${barH}" fill="#D9541F" rx="4"/>
+      <!-- vector right segment (5' start of vector) -->
+      <rect x="${vecRightX}" y="${barY}" width="${vecRightW}" height="${barH}" fill="#3A5A9C" rx="4"/>
+
+      <!-- overlap hatch marks at each junction -->
+      <rect x="${insertX-18}" y="${barY}" width="18" height="${barH}" fill="#E8A33D" opacity="0.55"/>
+      <rect x="${vecRightX}" y="${barY}" width="18" height="${barH}" fill="#E8A33D" opacity="0.55"/>
+
+      <text x="${vecLeftW/2}" y="${barY-10}" class="lbl-b" text-anchor="middle">${escapeHtml(vectorName)} (3' end)</text>
+      <text x="${insertX+insertW/2}" y="${barY-10}" class="lbl-b" text-anchor="middle" fill="#D9541F">${escapeHtml(insertName)}</text>
+      <text x="${vecRightX+vecRightW/2}" y="${barY-10}" class="lbl-b" text-anchor="middle">${escapeHtml(vectorName)} (5' start)</text>
+
+      <text x="${insertX}" y="${barY+barH+18}" class="ov" text-anchor="middle">\u2190 ${overlapLen} bp overlap</text>
+      <text x="${vecRightX}" y="${barY+barH+18}" class="ov" text-anchor="middle">${overlapLen} bp overlap \u2192</text>
+
+      <!-- primer arrows -->
+      <line x1="${insertX-16}" y1="${barY-28}" x2="${insertX+70}" y2="${barY-28}" stroke="#152238" stroke-width="1.6" marker-end="url(#arrow)"/>
+      <text x="${insertX-16}" y="${barY-34}" class="lbl">${escapeHtml(insertName)}-Fwd (tail = ${escapeHtml(vectorName)} end)</text>
+
+      <line x1="${insertX+insertW+16}" y1="${barY+barH+40}" x2="${insertX+insertW-70}" y2="${barY+barH+40}" stroke="#152238" stroke-width="1.6" marker-end="url(#arrow)"/>
+      <text x="${insertX+insertW+16}" y="${barY+barH+54}" class="lbl" text-anchor="end">${escapeHtml(insertName)}-Rev (tail = ${escapeHtml(vectorName)} start)</text>
+
+      ${vectorHasPCR ? `
+      <line x1="30" y1="${barY+barH+80}" x2="120" y2="${barY+barH+80}" stroke="#3A5A9C" stroke-width="1.6" marker-end="url(#arrowV)"/>
+      <text x="30" y="${barY+barH+94}" class="lbl">${escapeHtml(vectorName)}-Fwd (no tail)</text>
+      <line x1="${W-30}" y1="${barY+barH+110}" x2="${W-120}" y2="${barY+barH+110}" stroke="#3A5A9C" stroke-width="1.6" marker-end="url(#arrowV)"/>
+      <text x="${W-30}" y="${barY+barH+124}" class="lbl" text-anchor="end">${escapeHtml(vectorName)}-Rev (no tail)</text>
+      ` : ''}
+
+      <defs>
+        <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#152238"/>
+        </marker>
+        <marker id="arrowV" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="#3A5A9C"/>
+        </marker>
+      </defs>
+    </svg>`;
+  }
+
+  function escapeHtml(s){
+    return (s||'').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  /* ============ rendering ============ */
+  let lastPrimers = []; // for "copy all"
+
+  function renderPrimerCard(container, opts){
+    const {roleClass, name, tail, anneal, tm, overlapTm, length, warnings} = opts;
+    const full = tail + anneal;
+    const gc = gcContent(anneal);
+
+    const div = document.createElement('div');
+    div.className = 'primer-card ' + roleClass;
+
+    let warnHtml = '';
+    if(warnings.length){
+      warnHtml = '<div class="warn-list">' + warnings.map(w=>`<div class="warn-item ${w.level}">${w.level==='caution'?'\u26A0':'\u2716'} ${w.text}</div>`).join('') + '</div>';
+    } else {
+      warnHtml = '<div class="warn-list"><div class="warn-item ok">\u2713 No flags from automated checks.</div></div>';
+    }
+
+    div.innerHTML = `
+      <div class="p-head">
+        <span class="p-name">${escapeHtml(name)}</span>
+        <span class="p-meta">${full.length} nt total</span>
+      </div>
+      <div class="seq-box">${tail?`<span class="tail">${tail}</span>`:''}<span class="anneal">${anneal}</span></div>
+      ${tail? `<div class="legend"><span><i class="tail"></i>homology tail (${tail.length} nt${overlapTm!==null?`, overlap Tm ${overlapTm.toFixed(1)}\u00B0C`:''})</span><span><i class="anneal"></i>annealing region (${anneal.length} nt)</span></div>` : ''}
+      <div class="stat-row">
+        <div class="stat"><b>${tm!==null? tm.toFixed(1)+'\u00B0C':'\u2014'}</b><span>Annealing Tm</span></div>
+        <div class="stat"><b>${gc.toFixed(0)}%</b><span>Annealing GC</span></div>
+        <div class="stat"><b>${anneal.length} nt</b><span>Annealing length</span></div>
+      </div>
+      ${warnHtml}
+      <button class="copy-btn" type="button">Copy sequence</button>
+    `;
+    const copyBtn = div.querySelector('.copy-btn');
+    copyBtn.addEventListener('click', ()=> copyText(full, copyBtn));
+    container.appendChild(div);
+    lastPrimers.push({name, seq: full});
+  }
+
+  function renderJunctionCard(container, opts){
+    const {name, before, overlap, after, beforeLabel, afterLabel, context} = opts;
+    const div = document.createElement('div');
+    div.className = 'junction-card';
+    const full = before + overlap + after;
+    const shortContext = (before.length < context || after.length < context);
+    div.innerHTML = `
+      <div class="j-head">
+        <span class="j-name">${escapeHtml(name)}</span>
+        <span class="j-meta">${overlap.length} nt overlap, top strand shown 5\u2032&rarr;3\u2032</span>
+      </div>
+      <div class="seq-box"><span class="anneal">${before}</span><span class="tail">${overlap}</span><span class="anneal">${after}</span></div>
+      <div class="end-labels"><span>&larr; ${escapeHtml(beforeLabel)}</span><span>${escapeHtml(afterLabel)} &rarr;</span></div>
+      <div class="legend"><span><i class="tail"></i>shared overlap (identical in both fragments)</span><span><i class="anneal"></i>flanking context</span></div>
+      ${shortContext ? `<div class="warn-list"><div class="warn-item caution">\u26A0 One side had fewer than ${context} nt available, so less context is shown there.</div></div>` : ''}
+      <button class="copy-btn" type="button">Copy sequence</button>
+    `;
+    const copyBtn = div.querySelector('.copy-btn');
+    copyBtn.addEventListener('click', ()=> copyText(full, copyBtn));
+    container.appendChild(div);
+  }
+
+  function copyText(text, btn){
+    function done(){
+      if(btn){
+        const orig = btn.textContent;
+        btn.textContent = 'Copied \u2713';
+        btn.classList.add('copied');
+        setTimeout(()=>{ btn.textContent = orig; btn.classList.remove('copied'); }, 1400);
+      }
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(()=>fallbackCopy(text,done));
+    } else {
+      fallbackCopy(text, done);
+    }
+  }
+  function fallbackCopy(text, cb){
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); cb(); }catch(e){}
+    document.body.removeChild(ta);
+  }
+
+  /* ============ main design flow ============ */
+  document.getElementById('designBtn').addEventListener('click', function(){
+    lastPrimers = [];
+    const warningsGlobal = [];
+
+    const vectorNameRaw = document.getElementById('vectorName').value.trim() || 'Vector';
+    const insertNameRaw = document.getElementById('insertName').value.trim() || 'Insert';
+
+    const vParsed = parseSequenceInput(document.getElementById('vectorSeq').value);
+    const iParsed = parseSequenceInput(document.getElementById('insertSeq').value);
+
+    let vectorSeq = sliceRegion(vParsed.seq, document.getElementById('vectorStart'), document.getElementById('vectorEnd'));
+    let insertSeq = sliceRegion(iParsed.seq, document.getElementById('insertStart'), document.getElementById('insertEnd'));
+
+    if(!vectorSeq || vectorSeq.length < 20){
+      alert('Please provide a valid vector sequence (at least ~20 bp).');
+      return;
+    }
+    if(!insertSeq || insertSeq.length < 20){
+      alert('Please provide a valid insert sequence (at least ~20 bp).');
+      return;
+    }
+
+    const overlapLen = parseInt(document.getElementById('overlapLen').value,10) || 22;
+    const targetTm = parseFloat(document.getElementById('targetTm').value) || 60;
+    const minLen = parseInt(document.getElementById('minLen').value,10) || 18;
+    const maxLen = parseInt(document.getElementById('maxLen').value,10) || 35;
+    const primerConc = parseFloat(document.getElementById('primerConc').value) || 500;
+    const naConc = parseFloat(document.getElementById('naConc').value) || 50;
+    const vectorNeedsPCR = document.getElementById('vectorNeedsPCR').checked;
+
+    const opts = {minLen, maxLen, targetTm, primerConc, naConc};
+
+    if(overlapLen > vectorSeq.length || overlapLen > insertSeq.length){
+      warningsGlobal.push({level:'fail', text:'Overlap length is longer than one of your input sequences. Shorten the overlap or provide a longer sequence.'});
+    }
+
+    // ---- Insert primers (always carry vector-homology tails) ----
+    const vectorTailEnd = vectorSeq.slice(-overlapLen);           // last N bp of vector -> Insert-Fwd tail
+    const vectorTailStartRC = revcomp(vectorSeq.slice(0, overlapLen)); // revcomp of first N bp of vector -> Insert-Rev tail
+
+    const insFwd = buildAnnealingRegion(insertSeq, 'fwd', opts);
+    const insRev = buildAnnealingRegion(insertSeq, 'rev', opts);
+
+    const insFwdFull = vectorTailEnd + insFwd.seq;
+    const insRevFull = vectorTailStartRC + insRev.seq;
+
+    const overlapTmFwd = calcTm(vectorTailEnd, primerConc, naConc);
+    const overlapTmRev = calcTm(vectorTailStartRC, primerConc, naConc);
+
+    if(!insFwd.hitTarget) warningsGlobal.push({level:'caution', text:`${insertNameRaw}-Fwd annealing region reached the max length (${insFwd.len} nt) without hitting the target Tm (best: ${insFwd.tm? insFwd.tm.toFixed(1):'?'}\u00B0C). Consider raising max length or lowering target Tm.`});
+    if(!insRev.hitTarget) warningsGlobal.push({level:'caution', text:`${insertNameRaw}-Rev annealing region reached the max length (${insRev.len} nt) without hitting the target Tm (best: ${insRev.tm? insRev.tm.toFixed(1):'?'}\u00B0C). Consider raising max length or lowering target Tm.`});
+
+    if(overlapTmFwd !== null && (overlapTmFwd < 46 || overlapTmFwd > 58)) warningsGlobal.push({level:'caution', text:`Overlap Tm at the ${vectorNameRaw} 3' junction is ${overlapTmFwd.toFixed(1)}\u00B0C (typical Gibson target ~48\u201355\u00B0C). Try adjusting overlap length.`});
+    if(overlapTmRev !== null && (overlapTmRev < 46 || overlapTmRev > 58)) warningsGlobal.push({level:'caution', text:`Overlap Tm at the ${vectorNameRaw} 5' junction is ${overlapTmRev.toFixed(1)}\u00B0C (typical Gibson target ~48\u201355\u00B0C). Try adjusting overlap length.`});
+
+    if(has3primeDimerRisk(insFwd.seq, insRev.seq) || has3primeDimerRisk(insRev.seq, insFwd.seq)){
+      warningsGlobal.push({level:'caution', text:`${insertNameRaw}-Fwd and ${insertNameRaw}-Rev annealing 3' ends show possible complementarity \u2014 check for primer-dimer risk.`});
+    }
+
+    // ---- render diagram ----
+    document.getElementById('diagram').innerHTML = buildDiagramSVG(vectorNameRaw, insertNameRaw, overlapLen, vectorNeedsPCR);
+
+    // ---- junction sequences (what the final assembled molecule looks like at each seam) ----
+    const junctionContext = parseInt(document.getElementById('junctionContext').value,10) || 15;
+    const jc = document.getElementById('junctionCards');
+    jc.innerHTML = '';
+
+    // Junction 1: Vector's 3' end -> Insert's 5' start
+    {
+      const overlap = vectorSeq.slice(-overlapLen);
+      const before = vectorSeq.slice(Math.max(0, vectorSeq.length - overlapLen - junctionContext), vectorSeq.length - overlapLen);
+      const after = insertSeq.slice(0, junctionContext);
+      renderJunctionCard(jc, {
+        name: `Junction 1 \u2014 ${vectorNameRaw} (3\u2032 end) into ${insertNameRaw} (5\u2032 start)`,
+        before, overlap, after,
+        beforeLabel: vectorNameRaw, afterLabel: insertNameRaw,
+        context: junctionContext
+      });
+    }
+    // Junction 2: Insert's 3' end -> Vector's 5' start
+    {
+      const overlap = vectorSeq.slice(0, overlapLen);
+      const before = insertSeq.slice(Math.max(0, insertSeq.length - junctionContext), insertSeq.length);
+      const after = vectorSeq.slice(overlapLen, overlapLen + junctionContext);
+      renderJunctionCard(jc, {
+        name: `Junction 2 \u2014 ${insertNameRaw} (3\u2032 end) into ${vectorNameRaw} (5\u2032 start)`,
+        before, overlap, after,
+        beforeLabel: insertNameRaw, afterLabel: vectorNameRaw,
+        context: junctionContext
+      });
+    }
+
+    // ---- render global warnings ----
+    const gw = document.getElementById('globalWarns');
+    gw.innerHTML = '';
+    if(warningsGlobal.length === 0){
+      gw.innerHTML = '<div class="warn-item ok">\u2713 Overlap Tm and primer checks look reasonable.</div>';
+    } else {
+      warningsGlobal.forEach(w=>{
+        const d = document.createElement('div');
+        d.className = 'warn-item ' + w.level;
+        d.textContent = (w.level==='fail'?'\u2716 ':'\u26A0 ') + w.text;
+        gw.appendChild(d);
+      });
+    }
+    [...vParsed.warnings, ...iParsed.warnings].forEach(w=>{
+      const d = document.createElement('div');
+      d.className = 'warn-item caution';
+      d.textContent = '\u26A0 ' + w;
+      gw.appendChild(d);
+    });
+
+    // ---- render primer cards ----
+    const pc = document.getElementById('primerCards');
+    pc.innerHTML = '';
+
+    renderPrimerCard(pc, {
+      roleClass:'role-insert',
+      name: `${insertNameRaw}-Fwd (Gibson)`,
+      tail: vectorTailEnd,
+      anneal: insFwd.seq,
+      tm: insFwd.tm,
+      overlapTm: overlapTmFwd,
+      warnings: analyzePrimer(insFwdFull, insFwd.seq, vectorTailEnd)
+    });
+    renderPrimerCard(pc, {
+      roleClass:'role-insert',
+      name: `${insertNameRaw}-Rev (Gibson)`,
+      tail: vectorTailStartRC,
+      anneal: insRev.seq,
+      tm: insRev.tm,
+      overlapTm: overlapTmRev,
+      warnings: analyzePrimer(insRevFull, insRev.seq, vectorTailStartRC)
+    });
+
+    if(vectorNeedsPCR){
+      const vecFwd = buildAnnealingRegion(vectorSeq, 'fwd', opts);
+      const vecRev = buildAnnealingRegion(vectorSeq, 'rev', opts);
+      if(!vecFwd.hitTarget) warningsGlobal.push({level:'caution', text:`${vectorNameRaw}-Fwd annealing region reached max length without hitting target Tm.`});
+      if(!vecRev.hitTarget) warningsGlobal.push({level:'caution', text:`${vectorNameRaw}-Rev annealing region reached max length without hitting target Tm.`});
+
+      renderPrimerCard(pc, {
+        roleClass:'role-vector',
+        name: `${vectorNameRaw}-Fwd (plain, no tail)`,
+        tail: '',
+        anneal: vecFwd.seq,
+        tm: vecFwd.tm,
+        overlapTm: null,
+        warnings: analyzePrimer(vecFwd.seq, vecFwd.seq, '')
+      });
+      renderPrimerCard(pc, {
+        roleClass:'role-vector',
+        name: `${vectorNameRaw}-Rev (plain, no tail)`,
+        tail: '',
+        anneal: vecRev.seq,
+        tm: vecRev.tm,
+        overlapTm: null,
+        warnings: analyzePrimer(vecRev.seq, vecRev.seq, '')
+      });
+    }
+
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('results').scrollIntoView({behavior:'smooth', block:'start'});
+  });
+
+  document.getElementById('copyAllBtn').addEventListener('click', function(){
+    const text = lastPrimers.map(p => `${p.name}\t${p.seq}`).join('\n');
+    copyText(text, this);
+  });
+
+  /* ============ example data ============ */
+  document.getElementById('loadExample').addEventListener('click', function(){
+    document.getElementById('vectorName').value = 'pUC19-lin';
+    document.getElementById('vectorSeq').value =
+`AGCTTGCATGCCTGCAGGTCGACTCTAGAGGATCCCCGGGTACCGAGCTCGAATTCACTGGCCGTCGTTTTACAACGTCGTGACTGGGAAAACCCTGGCGTTACCCAACTTAATCGCCTTGCAGCACATCCCCCTTTCGCCAGCTGGCGTAATAGCGAAGAGGCCCGCACCGATCGCCCTTCCCAACAGTTGCGCAGCCTGAATGGCGAATGGCGCCTGATGCGGTATTTTCTCCTTACGCATCTGTGCGGTATTTCACACCGCATATGGTGCACTCTCAGTACAATCTGCTCTGATGCCGCATAGTTAAGCCAGCCCCGACACCCGCCAACACCCGCTGACGCGCCCTGACGGGCTTGTCTGCTCCCGGCATCCGCTTACAGACAAGCTGTGACCGTCTCCGGGAGCTGCATGTGTCAGAGGTTTTCACCGTCATCACCGAAACGCGCGA`;
+    document.getElementById('insertName').value = 'GOI-ORF';
+    document.getElementById('insertSeq').value =
+`ATGGCTAGCAAAGGAGAAGAACTTTTCACTGGAGTTGTCCCAATTCTTGTTGAATTAGATGGTGATGTTAATGGGCACAAATTTTCTGTCAGTGGAGAGGGTGAAGGTGATGCTACATACGGAAAGCTTACCCTTAAATTTATTTGCACTACTGGAAAACTACCTGTTCCATGGCCAACACTTGTCACTACTTTCTCTTATGGTGTTCAATGCTTTTCAAGATACCCAGATCATATGAAACGGCATGACTTTTTCAAGAGTGCCATGCCCGAAGGTTATGTACAGGAAAGAACTATATTTTTCAAAGATGACGGGAACTACAAGACACGTGCTGAAGTCAAGTTTGAAGGTGATACCCTTGTTAATAGAATCGAGTTAAAAGGTATTGATTTTAAAGAAGATGGAAACATTCTTGGACACAAATTGGAATACAACTATAACTCACACAATGTATACATCATGGCAGACAAACAAAAGAATGGAATCAAAGTTAACTTCAAAATTAGACACAACATTGAAGATGGAAGCGTTCAACTAGCAGACCATTATCAACAAAATACTCCAATTGGCGATGGCCCTGTCCTTTTACCAGACAACCATTACCTGTCCACACAATCTGCCCTTTCGAAAGATCCCAACGAAAAGAGAGACCACATGGTCCTTCTTGAGTTTGTAACAGCTGCTGGGATTACACATGGCATGGATGAACTATACAAATAA`;
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+})();
+</script>
+</body>
+</html>
